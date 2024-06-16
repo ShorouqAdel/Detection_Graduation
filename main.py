@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from PIL import Image
 import numpy as np
@@ -46,6 +46,11 @@ def preprocess_image(image):
     image /= 255.0
     image = np.expand_dims(image, axis=0)
     return image
+
+# Endpoint to test if the server is running
+@app.head("/ping")
+async def ping():
+    return "Hello, I am alive"
 
 # Endpoint to predict tomato disease
 @app.post("/predict/tomato")
@@ -96,4 +101,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)
