@@ -30,11 +30,8 @@ async def check_leaf(image: bytes):
 
 # Load the Keras model for tomato disease prediction
 tomato_classifier_model = tf.keras.models.load_model('tmtm.h5', compile=False)
-tomato_class_names = ['Tomato_Bacterial_spot', 'Tomato_Early_blight', 'Tomato_Late_blight',
-                      'Tomato_Leaf_Mold', 'Tomato_Septoria_leaf_spot', 'Tomato_Spider_mites_Two_spotted_spider_mite',
-                      'Tomato__Target_Spot', 'Tomato__Tomato_YellowLeaf__Curl_Virus', 'Tomato__Tomato_mosaic_virus',
-                      'Tomato_healthy']
-
+tomato_class_names = ["Bacterial-spot", "Early-blight", "Healthy", "Late-blight",
+    "Leaf-mold", "Mosaic-virus", "Septoria-leaf-spot", "Yellow-leaf-curl-virus" ]
 # Load the Keras model for potato disease prediction
 potato_classifier_model = tf.keras.models.load_model('potatoes.h5', compile=False)
 potato_class_names = ['Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy']
@@ -71,7 +68,7 @@ async def predict_tomato(file: UploadFile = File(...)):
     confidence = np.max(prediction) * 100
     predicted_class = tomato_class_names[np.argmax(prediction)]
 
-    return {"prediction": predicted_class, "confidence": round(confidence, 2)}
+    return {"class": predicted_class, "confidence": round(confidence, 2)}
 
 # Endpoint to predict potato disease
 @app.post("/predict/potato")
@@ -92,7 +89,7 @@ async def predict_potato(file: UploadFile = File(...)):
     confidence = np.max(prediction) * 100
     predicted_class = potato_class_names[np.argmax(prediction)]
 
-    return {"prediction": predicted_class, "confidence": round(confidence, 2)}
+    return {"class": predicted_class, "confidence": round(confidence, 2)}
 
 # Root endpoint
 @app.get("/")
