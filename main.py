@@ -65,10 +65,10 @@ async def predict_tomato(file: UploadFile = File(...)):
 
     # Make prediction using tomato model
     prediction = tomato_classifier_model.predict(processed_image)
-    confidence = np.max(prediction) * 100
+    confidence = float(np.max(prediction[0]))
     predicted_class = tomato_class_names[np.argmax(prediction)]
 
-    return {"class": predicted_class, "confidence": round(confidence, 2)}
+    return {"class": predicted_class, "confidence": confidence}
 
 # Endpoint to predict potato disease
 @app.post("/predict/potato")
@@ -89,7 +89,7 @@ async def predict_potato(file: UploadFile = File(...)):
     confidence = np.max(prediction) * 100
     predicted_class = potato_class_names[np.argmax(prediction)]
 
-    return {"class": predicted_class, "confidence": round(confidence, 2)}
+    return {"class": predicted_class, "confidence": confidence}
 
 # Root endpoint
 @app.get("/")
