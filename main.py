@@ -86,7 +86,7 @@ async def predict_potato(file: UploadFile = File(...)):
 
     # Make prediction using potato model
     prediction = potato_classifier_model.predict(processed_image)
-    confidence = np.max(prediction) * 100
+    confidence = float(np.max(prediction[0]))
     predicted_class = potato_class_names[np.argmax(prediction)]
 
     return {"class": predicted_class, "confidence": confidence}
