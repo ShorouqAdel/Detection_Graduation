@@ -43,7 +43,7 @@ tomato_class_names = [
     "Healthy"
 ]
 # Load the Keras model for potato disease prediction
-potato_classifier_model = tf.keras.models.load_model('potatoes.h5', compile=False)
+potato_classifier_model = tf.keras.models.load_model('potato.h5', compile=False)
 potato_class_names = ['Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy']
 
 # Function to preprocess image for prediction
