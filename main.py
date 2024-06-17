@@ -42,7 +42,6 @@ tomato_class_names = [
     "Mosaic-virus",
     "Healthy"
 ]
-
 # Load the Keras model for potato disease prediction
 potato_classifier_model = tf.keras.models.load_model('potatoes.h5', compile=False)
 potato_class_names = ['Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy']
@@ -55,26 +54,6 @@ def preprocess_image(image):
     image = np.expand_dims(image, axis=0)
     return image
 
-# Function to make prediction
-async def predict_disease(file: UploadFile, classifier_model, class_names):
-    contents = await file.read()
-    image = Image.open(io.BytesIO(contents))
-
-    # Check if the uploaded image is a leaf
-    is_leaf = await check_leaf(contents)
-    if not is_leaf:
-        raise HTTPException(status_code=400, detail="Uploaded image is not a leaf.")
-
-    # Preprocess image
-    processed_image = preprocess_image(image)
-
-    # Make prediction using model
-    prediction = classifier_model.predict(processed_image)
-    confidence = float(np.max(prediction[0]))
-    predicted_class = class_names[np.argmax(prediction)]
-
-    return {"class": predicted_class, "confidence": confidence}
-
 # Endpoint to test if the server is running
 @app.head("/ping")
 async def ping():
@@ -83,12 +62,44 @@ async def ping():
 # Endpoint to predict tomato disease
 @app.post("/predict/tomato")
 async def predict_tomato(file: UploadFile = File(...)):
-    return await predict_disease(file, tomato_classifier_model, tomato_class_names)
+    contents = await file.read()
+    image = Image.open(io.BytesIO(contents))
+
+    # Check if the uploaded image is a leaf
+    is_leaf = await check_leaf(contents)
+    if not is_leaf:
+        return JSONResponse(status_code=200, content={"message": "Uploaded image is not a leaf."})
+
+    # Preprocess image
+    processed_image = preprocess_image(image)
+
+    # Make prediction using tomato model
+    prediction = tomato_classifier_model.predict(processed_image)
+    confidence = float(np.max(prediction[0]))
+    predicted_class = tomato_class_names[np.argmax(prediction)]
+
+    return {"class": predicted_class, "confidence": confidence}
 
 # Endpoint to predict potato disease
 @app.post("/predict/potato")
 async def predict_potato(file: UploadFile = File(...)):
-    return await predict_disease(file, potato_classifier_model, potato_class_names)
+    contents = await file.read()
+    image = Image.open(io.BytesIO(contents))
+
+    # Check if the uploaded image is a leaf
+    is_leaf = await check_leaf(contents)
+    if not is_leaf:
+        return JSONResponse(status_code=200, content={"message": "Uploaded image is not a leaf."})
+
+    # Preprocess image
+    processed_image = preprocess_image(image)
+
+    # Make prediction using potato model
+    prediction = potato_classifier_model.predict(processed_image)
+    confidence = float(np.max(prediction[0]))
+    predicted_class = potato_class_names[np.argmax(prediction)]
+
+    return {"class": predicted_class, "confidence": confidence}
 
 # Root endpoint
 @app.get("/")
